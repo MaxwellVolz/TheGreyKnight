@@ -1,11 +1,8 @@
 import getch
+import random
 
-tier = 0
-
-
-def dead_check(health):
-    if health <= 0:
-        end_game()
+from minions import minions
+from dragons import dragons
 
 
 def end_game():
@@ -21,12 +18,12 @@ class Knight:
         self.armor = 0
         self.level = 1
         self.experience = 0
+        self.gold = 0
         self.curr_tier = 0
-        self.levels = [0, 20, 50, 100, 200, 500, 1000, 1500, 2000]
+        self.levels = [0, 20, 50, 100, 200, 500, 1000, 1500, 2000, 2500, 3000, 4000, 5000, 6000, 7000, 8000, 10000]
 
     def take_damage(self, damage):
         self.curr_health -= damage
-        dead_check(self.curr_health)
 
     def gain_experience(self, xp_points):
         self.experience += xp_points
@@ -34,7 +31,7 @@ class Knight:
             self.level_up()
 
     def level_up(self):
-        health_gain = 20
+        health_gain = 25
         attack_gain = 5
         self.max_health += health_gain
         self.curr_health = self.max_health
@@ -55,31 +52,17 @@ class Knight:
         """)
 
 
-minions = {
-    'name': ['a fairy', 'an elf', 'an Orc'],
-    'attack': [20, 30, 35],
-    'health': [30, 100, 200],
-    'xp_reward': [10, 20, 30],
-    'gold_reward': [1, 3, 5]
-}
-
-dragons = {
-    'name': ['Brightwing', 'Charizard', 'Ragnaros'],
-    'attack': [25, 30, 60],
-    'health': [200, 400, 1000],
-    'xp_reward': [100, 200, 300],
-    'gold_reward': [10, 30, 50]
-}
-
 Knight = Knight('Gerald')
 Knight.stat_sheet()
 
 
 def combat(enemy):
-    enemy_name = enemy['name'][Knight.curr_tier]
-    enemy_health = enemy_max_health = enemy['health'][Knight.curr_tier]
-    enemy_attack = enemy['attack'][Knight.curr_tier]
-    xp_reward = enemy['xp_reward'][Knight.curr_tier]
+    enemy = enemy[Knight.curr_tier]
+    enemy_name = enemy['name']
+    enemy_health = enemy_max_health = enemy['health']
+    enemy_attack = enemy['attack']
+    xp_reward = enemy['xp_reward']
+    gold_reward = enemy['gold_reward']
 
     print(f"\n{Knight.name} engages {enemy_name} in combat.\n")
 
@@ -95,11 +78,10 @@ def combat(enemy):
     if Knight.curr_health > 0:
         print(f"{Knight.name} defeats {enemy_name}. {xp_reward} XP awarded.\n")
         Knight.gain_experience(xp_reward)
-
-
-
-def attacking_win():
-    print("You won the battle.")
+        Knight.gold += gold_reward
+    else:
+        print(f"{Knight.name} has been slain.\n")
+        exit()
 
 
 def game_loop(curr_player_health):
@@ -111,16 +93,14 @@ def game_loop(curr_player_health):
     if option == 'A' or option == 'a':
         combat(minions)
 
-
     elif option == 'S' or option == 's':
-        print("Sleeping!")
+        print(f"{Knight.name} makes camp.\n")
         Knight.curr_health = Knight.max_health
 
     elif option == 'D' or option == 'd':
-        print("Fighting the Dragon!")
         combat(dragons)
         Knight.curr_tier += 1
-        print("Player Health:", Knight.curr_health, " | XP:", Knight.experience)
+        # print(f"{Knight.name} Health:", Knight.curr_health, " | XP:", Knight.experience)
 
     elif option == 'Q' or option == 'q':
         print("Equipping!")
@@ -133,7 +113,7 @@ def game_loop(curr_player_health):
 
     else:
         print("Incorrect option")
-        exit()
+        # exit()
 
     game_loop(Knight.curr_health)
 
