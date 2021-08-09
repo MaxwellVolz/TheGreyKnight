@@ -15,11 +15,24 @@ class Knight:
         self.name = name
         self.max_health = self.curr_health = 100
         self.attack = 10
-        self.armor = 0
+        self.armor = {
+            'name': 'Body Paint',
+            'type': 'armor',
+            'armor': 0
+        }
         self.level = 1
         self.experience = 0
         self.gold = 0
         self.curr_tier = 0
+        self.crit_chance = 10
+        self.crit_multiplier = 1.5
+        self.weapon = {
+            'name': 'Boxing Gloves',
+            'type': 'weapon',
+            'damage': 0,
+            'crit_chance': 0,
+            'crit_multiplier': 0,
+        }
         self.levels = [0, 20, 50, 100, 200, 500, 1000, 1500, 2000, 2500, 3000, 4000, 5000, 6000, 7000, 8000, 10000]
 
     def take_damage(self, damage):
@@ -37,7 +50,7 @@ class Knight:
         self.curr_health = self.max_health
         self.attack += attack_gain
         self.level += 1
-        print(f"{self.name} is now level {self.level}. HP:", self.max_health, " | Attack:", self.attack, "\n")
+        self.stat_sheet()
 
     def full_heal(self):
         self.curr_health = self.max_health
@@ -47,13 +60,40 @@ class Knight:
         print(f"""
             {self.name}, the level {self.level} Knight
             Health: {self.curr_health}/{self.max_health}
-            Armor: {self.armor}
-            Attack: {self.attack}
+            Armor: {self.armor['name']}
+            Defense: {self.armor['armor']}
+            Weapon: {self.weapon['name']}
+            Attack: {self.attack + self.weapon['damage']}
+            Crit: {self.crit_chance + self.weapon['crit_chance']}% for {(self.crit_multiplier + self.weapon['crit_multiplier'])*100}%
         """)
 
 
 Knight = Knight('Gerald')
 Knight.stat_sheet()
+
+
+def roll_damage(dmg, crit_chance, crit_multiplier):
+    if random.randrange(0, 100) <= crit_chance:
+        return dmg * crit_multiplier
+    else:
+        return dmg
+
+
+def loot_corpse(drop_table):
+    loot = []
+    for gear in drop_table:
+        if random.randrange(0, 100) <= gear['drop_chance']:
+            loot.append(gear)
+            print(f'{Knight.name} found [{gear["name"]}].')
+    return loot
+
+
+def equip_gear(bag_of_gear):
+    for gear in bag_of_gear:
+        if gear['type'] == 'weapon':
+            Knight.weapon = gear
+        if gear['type'] == 'armor':
+            Knight.armor = gear
 
 
 def combat(enemy):
@@ -64,23 +104,34 @@ def combat(enemy):
     xp_reward = enemy['xp_reward']
     gold_reward = enemy['gold_reward']
 
-    print(f"\n{Knight.name} engages {enemy_name} in combat.\n")
+    print(f"\n{Knight.name}({Knight.curr_health}/{Knight.max_health}) engages {enemy_name} in combat.\n")
 
-    enemy_health = enemy_health - Knight.attack
+    calculated_damage = roll_damage(Knight.attack + Knight.weapon['damage'],
+                                    Knight.crit_chance + Knight.weapon['crit_chance'],
+                                    Knight.crit_multiplier + Knight.weapon['crit_multiplier'])
+    print(f"{Knight.name} slices {enemy_name} for {int(calculated_damage)} damage.")
+
+    enemy_health -= calculated_damage
 
     while enemy_health > 0 and Knight.curr_health > 0:
-        # curr_player_health = curr_player_health - enemy_attack
-        Knight.take_damage(enemy_attack)
-        print(f"{Knight.name}: {Knight.curr_health}/{Knight.max_health} "
-              f"| {enemy_name}: {enemy_health}/{enemy_max_health}")
-        enemy_health -= Knight.attack
+        print(f"{enemy_name.capitalize()} slices {Knight.name} for {enemy_attack - Knight.armor['armor']} damage.")
+        Knight.take_damage(enemy_attack - Knight.armor['armor'])
+
+        calculated_damage = roll_damage(Knight.attack + Knight.weapon['damage'],
+                                        Knight.crit_chance + Knight.weapon['crit_chance'],
+                                        Knight.crit_multiplier + Knight.weapon['crit_multiplier'])
+        print(f"{Knight.name} slices {enemy_name} for {int(calculated_damage)} damage.")
+
+        enemy_health -= calculated_damage
 
     if Knight.curr_health > 0:
-        print(f"{Knight.name} defeats {enemy_name}. {xp_reward} XP awarded.\n")
-        Knight.gain_experience(xp_reward)
+        print(f"{Knight.name} defeats {enemy_name}. {xp_reward} XP awarded. HP: {Knight.curr_health}/{Knight.max_health}\n")
         Knight.gold += gold_reward
+        # Auto equip drops
+        equip_gear(loot_corpse(enemy['loot']))
+        Knight.gain_experience(xp_reward)
     else:
-        print(f"{Knight.name} has been slain.\n")
+        print(f"{Knight.name} has been slain by {enemy_name}({enemy_health/enemy_max_health}).\n")
         exit()
 
 
@@ -103,7 +154,8 @@ def game_loop(curr_player_health):
         # print(f"{Knight.name} Health:", Knight.curr_health, " | XP:", Knight.experience)
 
     elif option == 'Q' or option == 'q':
-        print("Equipping!")
+        # print("Equipping!")
+        Knight.stat_sheet()
 
     elif option == 'W' or option == 'w':
         print("Selling!")

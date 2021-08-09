@@ -5,20 +5,53 @@ dragons = [
         'attack': 25,
         'health': 200,
         'xp_reward': 100,
-        'gold_reward': 20
+        'gold_reward': 20,
+        'loot': [
+            {
+                'name': 'Copper Dagger',
+                'type': 'weapon',
+                'drop_chance': 30,
+                'damage': 5,
+                'crit_chance': 5,
+                'crit_multiplier': 1,
+            },
+            {
+                'name': 'Leather Tunic',
+                'type': 'armor',
+                'drop_chance': 30,
+                'armor': 5
+            }
+        ]
     },
     {
         'name': 'Charizard',
         'attack': 30,
-        'health': 350,
+        'health': 400,
         'xp_reward': 200,
         'gold_reward': 50,
+        'loot': [
+            {
+                'name': 'Iron Broadsword',
+                'type': 'weapon',
+                'drop_chance': 30,
+                'damage': 10,
+                'crit_chance': 10,
+                'crit_multiplier': 1,
+            },
+            {
+                'name': 'Iron Chainmail',
+                'type': 'armor',
+                'drop_chance': 30,
+                'armor': 10
+            }
+        ]
     },
     {
         'name': 'Ragnaros',
         'attack': 50,
-        'health': 600,
+        'health': 1000,
         'xp_reward': 300,
-        'gold_reward': 100
+        'gold_reward': 100,
+        'loot': []
     }
 ]
