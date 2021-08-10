@@ -4,6 +4,13 @@ import random
 from minions import minions
 from dragons import dragons
 
+# TODO
+#
+# Randomize Weapon drops within defined range
+# Equip gear option with comparison
+# GUI with healthbar, buttons, hotkeys
+# Repeat last action with <Enter>
+
 
 def end_game():
     print("Game Over.")
@@ -33,7 +40,7 @@ class Knight:
             'crit_chance': 0,
             'crit_multiplier': 0,
         }
-        self.levels = [0, 20, 50, 100, 200, 500, 1000, 1500, 2000, 2500, 3000, 4000, 5000, 6000, 7000, 8000, 10000]
+        self.levels = [0, 20, 50, 100, 200, 500, 1000, 1500, 2000, 2500, 3000, 4000, 5250, 6500, 7750, 10000, 100000]
 
     def take_damage(self, damage):
         self.curr_health -= damage
@@ -67,9 +74,6 @@ class Knight:
             Crit: {self.crit_chance + self.weapon['crit_chance']}% for {(self.crit_multiplier + self.weapon['crit_multiplier'])*100}%
         """)
 
-
-Knight = Knight('Gerald')
-Knight.stat_sheet()
 
 
 def roll_damage(dmg, crit_chance, crit_multiplier):
@@ -135,8 +139,12 @@ def combat(enemy):
         exit()
 
 
-def game_loop(curr_player_health):
+def game_loop():
     # option = input("(A)Attack (S)Sleep (D)Dragon (Q)Equip (W)Sell (E)Shop:")
+    new_name = input("Enter your name:")
+    if new_name == "": new_name = "Gerald"
+    Knight.name = new_name
+    Knight.stat_sheet()
 
     print("(A)Attack (S)Sleep (D)Dragon (Q)Equip (W)Sell (E)Shop")
     option = getch.getch()
@@ -167,7 +175,9 @@ def game_loop(curr_player_health):
         print("Incorrect option")
         # exit()
 
-    game_loop(Knight.curr_health)
+    game_loop()
 
 
-game_loop(Knight.curr_health)
+Knight = Knight('Gerald')
+
+game_loop()
