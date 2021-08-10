@@ -1,4 +1,5 @@
-import getch
+# import getch
+import msvcrt
 import random
 
 from minions import minions
@@ -135,49 +136,49 @@ def combat(enemy):
         equip_gear(loot_corpse(enemy['loot']))
         Knight.gain_experience(xp_reward)
     else:
-        print(f"{Knight.name} has been slain by {enemy_name}({enemy_health/enemy_max_health}).\n")
+        print(f"{Knight.name} has been slain by {enemy_name}({enemy_health}/{enemy_max_health}).\n")
         exit()
 
 
 def game_loop():
     # option = input("(A)Attack (S)Sleep (D)Dragon (Q)Equip (W)Sell (E)Shop:")
-    new_name = input("Enter your name:")
-    if new_name == "": new_name = "Gerald"
-    Knight.name = new_name
-    Knight.stat_sheet()
+
 
     print("(A)Attack (S)Sleep (D)Dragon (Q)Equip (W)Sell (E)Shop")
-    option = getch.getch()
+    # option = getch.getch()
+    option = msvcrt.getch()
 
-    if option == 'A' or option == 'a':
+    if option == 'A' or option == 'a' or option == b'a' or option == b'A':
         combat(minions)
 
-    elif option == 'S' or option == 's':
+    elif option == 'S' or option == 's' or option == b's' or option == b'S':
         print(f"{Knight.name} makes camp.\n")
         Knight.curr_health = Knight.max_health
 
-    elif option == 'D' or option == 'd':
+    elif option == 'D' or option == 'd' or option == b'd' or option == b'D':
         combat(dragons)
         Knight.curr_tier += 1
         # print(f"{Knight.name} Health:", Knight.curr_health, " | XP:", Knight.experience)
 
-    elif option == 'Q' or option == 'q':
+    elif option == 'Q' or option == 'q' or option == b'q' or option == b'Q':
         # print("Equipping!")
         Knight.stat_sheet()
 
-    elif option == 'W' or option == 'w':
+    elif option == 'W' or option == 'w' or option == b'w' or option == b'W':
         print("Selling!")
 
-    elif option == 'E' or option == 'e':
+    elif option == 'E' or option == 'e' or option == b'e' or option == b'E':
         print("Shopping!")
 
     else:
-        print("Incorrect option")
+        print("Incorrect option:", option)
         # exit()
 
     game_loop()
 
-
-Knight = Knight('Gerald')
+new_name = input("Enter your name:")
+if new_name == "": new_name = "Gerald"
+Knight = Knight(new_name)
+Knight.stat_sheet()
 
 game_loop()
