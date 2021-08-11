@@ -1,0 +1,2 @@
+getch; sys_platform == 'darwin'
+msvcrt; sys_platform == 'windows'
