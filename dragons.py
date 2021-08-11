@@ -14,12 +14,14 @@ dragons = [
                 'damage': 5,
                 'crit_chance': 5,
                 'crit_multiplier': 1,
+                'price': 15
             },
             {
                 'name': 'Leather Tunic',
                 'type': 'armor',
                 'drop_chance': 30,
-                'armor': 5
+                'armor': 5,
+                'price': 10
             }
         ]
     },
@@ -37,12 +39,14 @@ dragons = [
                 'damage': 10,
                 'crit_chance': 10,
                 'crit_multiplier': 1,
+                'price': 25
             },
             {
                 'name': 'Iron Chainmail',
                 'type': 'armor',
                 'drop_chance': 30,
-                'armor': 10
+                'armor': 10,
+                'price': 30
             }
         ]
     },

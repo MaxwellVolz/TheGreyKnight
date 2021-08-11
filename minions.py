@@ -14,12 +14,14 @@ minions = [
                 'damage': 3,
                 'crit_chance': 0,
                 'crit_multiplier': 0,
+                'price': 5
             },
             {
                 'name': 'Loin Cloth',
                 'type': 'armor',
                 'drop_chance': 7,
-                'armor': 2
+                'armor': 2,
+                'price': 3
             }
         ]
     },
@@ -37,12 +39,14 @@ minions = [
                 'damage': 7,
                 'crit_chance': 7,
                 'crit_multiplier': 1,
+                'price': 7
             },
             {
                 'name': 'Studded Leather Jerkin',
                 'type': 'armor',
                 'drop_chance': 7,
-                'armor': 7
+                'armor': 7,
+                'price': 5
             }
         ]
     },
@@ -60,12 +64,14 @@ minions = [
                 'damage': 20,
                 'crit_chance': 10,
                 'crit_multiplier': 1.2,
+                'price': 10
             },
             {
                 'name': 'Platemail',
                 'type': 'armor',
                 'drop_chance': 5,
-                'armor': 15
+                'armor': 15,
+                'price': 7
             }
         ]
     }
