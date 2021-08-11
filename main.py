@@ -1,5 +1,10 @@
-# import getch
-import msvcrt
+
+import sys
+
+if 'darwin' in sys.platform:
+    import getch
+else:
+    import msvcrt
 import random
 
 from minions import minions
@@ -10,9 +15,6 @@ from shop import shop
 # TODO
 #
 # Randomize Weapon drops within defined range
-# Add price to weapons
-# Inventory List
-# Shop
 # GUI with healthbar, buttons, hotkeys
 # Repeat last action with <Enter>
 
@@ -34,7 +36,7 @@ class Knight:
         }
         self.level = 1
         self.experience = 0
-        self.gold = 0
+        self.gold = 20
         self.curr_tier = 0
         self.crit_chance = 10
         self.crit_multiplier = 1.5
@@ -107,7 +109,6 @@ def equip_gear(curr_Knight, bag_of_gear):
             if gear['name'] == Knight.weapon['name']:
                 Knight.inventory.append(Knight.weapon)
                 break
-            # Compare
             print(f"""
 Choose:
 (A) [{curr_Knight.weapon["name"]}]: 
@@ -115,9 +116,12 @@ Choose:
 (D) [{gear["name"]}]: 
     {gear["damage"]} dmg  +{gear["crit_chance"]}% chance to +crit %{gear["crit_multiplier"]} """)
 
-            option = msvcrt.getch()
+            if 'darwin' in sys.platform:
+                option = getch.getch()
+            else:
+                option = msvcrt.getch()
+
             if option == 'A' or option == 'a' or option == b'a' or option == b'A':
-                print("TODO: Putting in bag")
                 Knight.inventory.append(gear)
 
             elif option == 'D' or option == 'd' or option == b'd' or option == b'D':
@@ -136,9 +140,12 @@ Choose:
 (A) Replace [{curr_Knight.armor["name"]}]: {curr_Knight.armor["armor"]} armor
 (D) With    [{gear["name"]}]: {gear["armor"]} armor
 """)
-            option = msvcrt.getch()
+            if 'darwin' in sys.platform:
+                option = getch.getch()
+            else:
+                option = msvcrt.getch()
+
             if option == 'A' or option == 'a' or option == b'a' or option == b'A':
-                print("TODO: Putting in bag")
                 Knight.inventory.append(gear)
 
             elif option == 'D' or option == 'd' or option == b'd' or option == b'D':
@@ -164,8 +171,12 @@ def open_shop():
         if gear['type'] == 'weapon':
             print(f'({index})   [{gear["name"]}]: {gear["damage"]} dmg  +{gear["crit_chance"]}% chance to +crit %{gear["crit_multiplier"]}  | Cost: {gear["cost"]}')
 
-    print("(Q)Leave (W)Sell (1-9)Buy")
-    option = msvcrt.getch()
+    print("\n(Q)Leave (W)Sell (1-9)Buy\n")
+
+    if 'darwin' in sys.platform:
+        option = getch.getch()
+    else:
+        option = msvcrt.getch()
 
     if option == 'Q' or option == 'q' or option == b'q' or option == b'Q':
         return
@@ -174,9 +185,12 @@ def open_shop():
         sell_inventory()
         open_shop()
 
+    print(option)
     buy_option = -1
     try:
         buy_option = int(option.decode("utf-8"))
+    except AttributeError:
+        buy_option = int(option)
     except ValueError:
         return
 
@@ -189,8 +203,9 @@ def open_shop():
 
         if Knight.gold > cost_of_item:
             Knight.gold -= cost_of_item
+
         try:
-            equip_gear(Knight, shop[Knight.curr_tier][int(option)])
+            equip_gear(Knight, [shop[Knight.curr_tier][int(option)]])
         except IndexError:
             print("That is no item! That is my cat!")
         
@@ -250,8 +265,11 @@ def game_loop():
     # option = input("(A)Attack (S)Sleep (D)Dragon (Q)Equip (W)Sell (E)Shop:")
 
     print("(A)Attack (S)Sleep (D)Dragon (Q)Stats (W)Sell (E)Shop")
-    # option = getch.getch()
-    option = msvcrt.getch()
+
+    if 'darwin' in sys.platform:
+        option = getch.getch()
+    else:
+        option = msvcrt.getch()
 
     if option == 'A' or option == 'a' or option == b'a' or option == b'A':
         combat(minions)
@@ -287,8 +305,7 @@ def game_loop():
     game_loop()
 
 
-print("\nWelcome to The Grey Knight.")
-print("Genre: Hardcore RPG Roguelike.\n")
+print("\nWelcome to The Grey Knight, a hardcore RPG Roguelike Survival Game\n")
 
 new_name = input("Enter your name:")
 if new_name == "": new_name = "Gerald"
