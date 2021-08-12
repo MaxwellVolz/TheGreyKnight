@@ -14,7 +14,8 @@ dragons = [
                 'damage': 5,
                 'crit_chance': 5,
                 'crit_multiplier': 1,
-                'price': 15
+                'price': 15,
+                'action_name': 'sticks'
             },
             {
                 'name': 'Leather Tunic',
@@ -39,7 +40,8 @@ dragons = [
                 'damage': 10,
                 'crit_chance': 10,
                 'crit_multiplier': 1,
-                'price': 25
+                'price': 25,
+                'action_name': 'slashes'
             },
             {
                 'name': 'Iron Chainmail',

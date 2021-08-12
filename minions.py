@@ -14,7 +14,8 @@ minions = [
                 'damage': 3,
                 'crit_chance': 0,
                 'crit_multiplier': 0,
-                'price': 5
+                'price': 5,
+                'action_name': 'fans'
             },
             {
                 'name': 'Loin Cloth',
@@ -39,7 +40,8 @@ minions = [
                 'damage': 7,
                 'crit_chance': 7,
                 'crit_multiplier': 1,
-                'price': 7
+                'price': 7,
+                'action_name': 'skewers'
             },
             {
                 'name': 'Studded Leather Jerkin',
@@ -64,7 +66,8 @@ minions = [
                 'damage': 20,
                 'crit_chance': 10,
                 'crit_multiplier': 1.2,
-                'price': 10
+                'price': 10,
+                'action_name': 'perforates'
             },
             {
                 'name': 'Platemail',

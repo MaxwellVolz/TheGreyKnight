@@ -46,7 +46,8 @@ class Knight:
             'damage': 0,
             'crit_chance': 0,
             'crit_multiplier': 0,
-            'price': 1
+            'price': 1,
+            'action_name': 'punches'
         }
         self.inventory = []
         self.levels = [0, 20, 50, 100, 200, 500, 1000, 1500, 2000, 2500, 3000, 4000, 5250, 6500, 7750, 10000, 100000]
@@ -101,6 +102,12 @@ def loot_corpse(drop_table):
             print(f'{Knight.name} found [{gear["name"]}].')
     return loot
 
+def get_keyboard_input():
+    if 'darwin' in sys.platform:
+        return getch.getch()
+    else:
+        return msvcrt.getch()
+
 
 def equip_gear(curr_Knight, bag_of_gear):
     for gear in bag_of_gear:
@@ -116,10 +123,7 @@ Choose:
 (D) [{gear["name"]}]: 
     {gear["damage"]} dmg  +{gear["crit_chance"]}% chance to +crit %{gear["crit_multiplier"]} """)
 
-            if 'darwin' in sys.platform:
-                option = getch.getch()
-            else:
-                option = msvcrt.getch()
+            option = get_keyboard_input()
 
             if option == 'A' or option == 'a' or option == b'a' or option == b'A':
                 Knight.inventory.append(gear)
@@ -140,14 +144,10 @@ Choose:
 (A) Replace [{curr_Knight.armor["name"]}]: {curr_Knight.armor["armor"]} armor
 (D) With    [{gear["name"]}]: {gear["armor"]} armor
 """)
-            if 'darwin' in sys.platform:
-                option = getch.getch()
-            else:
-                option = msvcrt.getch()
 
+            option = get_keyboard_input()
             if option == 'A' or option == 'a' or option == b'a' or option == b'A':
                 Knight.inventory.append(gear)
-
             elif option == 'D' or option == 'd' or option == b'd' or option == b'D':
                 Knight.inventory.append(Knight.armor)
                 Knight.armor = gear
@@ -173,10 +173,7 @@ def open_shop():
 
     print("\n(Q)Leave (W)Sell (1-9)Buy\n")
 
-    if 'darwin' in sys.platform:
-        option = getch.getch()
-    else:
-        option = msvcrt.getch()
+    option = get_keyboard_input()
 
     if option == 'Q' or option == 'q' or option == b'q' or option == b'Q':
         return
@@ -185,7 +182,6 @@ def open_shop():
         sell_inventory()
         open_shop()
 
-    print(option)
     buy_option = -1
     try:
         buy_option = int(option.decode("utf-8"))
@@ -213,63 +209,56 @@ def open_shop():
 
 def combat(enemy):
     enemy = enemy[Knight.curr_tier]
-    enemy_name = enemy['name']
     enemy_health = enemy_max_health = enemy['health']
-    enemy_attack = enemy['attack']
-    xp_reward = enemy['xp_reward']
-    gold_reward = enemy['gold_reward']
 
-    print(f"\n{Knight.name}({Knight.curr_health}/{Knight.max_health}) engages {enemy_name} in combat.\n")
+    print(f"\n{Knight.name}({Knight.curr_health}/{Knight.max_health}) engages {enemy['name']} in combat.\n")
 
     calculated_damage = roll_damage(Knight.attack + Knight.weapon['damage'],
                                     Knight.crit_chance + Knight.weapon['crit_chance'],
                                     Knight.crit_multiplier + Knight.weapon['crit_multiplier'])
-    print(f"{Knight.name} slices {enemy_name} for {int(calculated_damage)} damage.")
+    print(f"{Knight.name} {Knight.weapon['action_name']} {enemy['name']} for {int(calculated_damage)} damage.")
 
     enemy_health -= calculated_damage
 
     while enemy_health > 0 and Knight.curr_health > 0:
-        print(f"{enemy_name.capitalize()} slices {Knight.name} for {enemy_attack - Knight.armor['armor']} damage.")
-        Knight.take_damage(enemy_attack - Knight.armor['armor'])
+        print(f"{enemy['name'].capitalize()} slices {Knight.name} for {enemy['attack'] - Knight.armor['armor']} damage.")
+        Knight.take_damage(enemy['attack'] - Knight.armor['armor'])
 
         calculated_damage = roll_damage(Knight.attack + Knight.weapon['damage'],
                                         Knight.crit_chance + Knight.weapon['crit_chance'],
                                         Knight.crit_multiplier + Knight.weapon['crit_multiplier'])
-        print(f"{Knight.name} slices {enemy_name} for {int(calculated_damage)} damage.")
+        print(f"{Knight.name} {Knight.weapon['action_name']} {enemy['name']} for {int(calculated_damage)} damage.")
 
         enemy_health -= calculated_damage
 
     if Knight.curr_health > 0:
-        print(f"{Knight.name} defeats {enemy_name}. {xp_reward} XP awarded. HP: {Knight.curr_health}/{Knight.max_health}\n")
-        Knight.gold += gold_reward
+        print(f"{Knight.name} defeats {enemy['name']}. {enemy['xp_reward']} XP awarded. HP: {Knight.curr_health}/{Knight.max_health}\n")
+        Knight.gold += enemy['gold_reward']
 
         equip_gear(Knight, loot_corpse(enemy['loot']))
-        Knight.gain_experience(xp_reward)
+        Knight.gain_experience(enemy['xp_reward'])
 
     # If enemy killed but Knight dies, Knight lives on
     elif enemy_health < 0:
         Knight.curr_health = 1
-        print(f"{Knight.name} barely defeats {enemy_name}. {xp_reward}*2 XP awarded. HP: {Knight.curr_health}/{Knight.max_health}\n")
-        Knight.gold += gold_reward
+        print(f"{Knight.name} barely defeats {enemy['name']}. {enemy['xp_reward']}*2 XP awarded. HP: {Knight.curr_health}/{Knight.max_health}\n")
+        Knight.gold += enemy['gold_reward']
 
         # Auto equip drops
         equip_gear(Knight, loot_corpse(enemy['loot']))
-        Knight.gain_experience(xp_reward*2)
+        Knight.gain_experience(enemy['xp_reward']*2)
 
     else:
-        print(f"{Knight.name} has been slain by {enemy_name}({enemy_health}/{enemy_max_health}).\n")
+        print(f"{Knight.name} has been slain by {enemy['name']}({enemy_health}/{enemy_max_health}).\n")
         exit()
 
 
 def game_loop():
     # option = input("(A)Attack (S)Sleep (D)Dragon (Q)Equip (W)Sell (E)Shop:")
 
-    print("(A)Attack (S)Sleep (D)Dragon (Q)Stats (W)Sell (E)Shop")
+    print("\n(A)Attack (S)Sleep (D)Dragon (Q)Stats (W)Sell (E)Shop")
 
-    if 'darwin' in sys.platform:
-        option = getch.getch()
-    else:
-        option = msvcrt.getch()
+    option = get_keyboard_input()
 
     if option == 'A' or option == 'a' or option == b'a' or option == b'A':
         combat(minions)
@@ -303,7 +292,6 @@ def game_loop():
         # exit()
 
     game_loop()
-
 
 print("\nWelcome to The Grey Knight, a hardcore RPG Roguelike Survival Game\n")
 

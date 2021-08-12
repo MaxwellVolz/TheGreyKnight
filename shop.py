@@ -8,7 +8,8 @@ shop = [
             'crit_chance': 20,
             'crit_multiplier': 50,
             'price': 10,
-            'cost': 20
+            'cost': 20,
+            'action_name': 'cuts'
         },
         {
             'name': 'Bike Helmet',
@@ -26,7 +27,8 @@ shop = [
             'crit_chance': 5,
             'crit_multiplier': 1.1,
             'price': 30,
-            'cost': 100
+            'cost': 100,
+            'action_name': 'stabs'
         },
         {
             'name': 'Copper Breastplate',
@@ -43,9 +45,10 @@ shop = [
             'type': 'weapon',
             'damage': 40,
             'crit_chance': 45,
-            'crit_multiplier': -1,
+            'crit_multiplier': -100,
             'price': 0,
-            'cost': 800
+            'cost': 800,
+            'action_name': 'shanks'
         },
         {
             'name': 'Leather Duster',
