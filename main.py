@@ -66,6 +66,7 @@ class Knight:
         self.level += 1
         self.stat_sheet()
 
+
     def full_heal(self):
         self.curr_health = self.max_health
         print(f"Health: {self.curr_health}/{self.max_health}")
@@ -250,8 +251,15 @@ def combat(enemy):
         exit()
 
 
-def game_loop():
+turn_counter = 0
+
+def game_loop(turn_counter):
     # option = input("(A)Attack (S)Sleep (D)Dragon (Q)Equip (W)Sell (E)Shop:")
+    turn_counter += 1
+
+    if turn_counter > 800:
+        print(f"\n{Knight.name} died of old age.\n")
+        exit()
 
     print("\n(A)Attack (S)Sleep (D)Dragon (Q)Stats (W)Sell (E)Shop")
     # option = getch.getch()
@@ -269,7 +277,7 @@ def game_loop():
         Knight.curr_tier += 1
         if Knight.curr_tier == 3:
             Knight.stat_sheet()
-            print(f"\n{Knight.name}, the Supreme Hero, has completed speciocide on dragons.\n")
+            print(f"\n{Knight.name}, the Supreme Hero, has defeated the last dragon.\n")
             exit()
         # print(f"{Knight.name} Health:", Knight.curr_health, " | XP:", Knight.experience)
 
@@ -289,7 +297,7 @@ def game_loop():
         print("Incorrect option:", option)
         # exit()
 
-    game_loop()
+    game_loop(turn_counter)
 
 
 
@@ -306,4 +314,4 @@ if new_name == "": new_name = "Gerald"
 Knight = Knight(new_name)
 Knight.stat_sheet()
 
-game_loop()
+game_loop(turn_counter)
