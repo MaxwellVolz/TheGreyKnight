@@ -27,21 +27,21 @@ minions = [
         ]
     },
     {
-        'name': 'an elf',
+        'name': 'a zombie',
         'attack': 30,
         'health': 80,
         'xp_reward': 20,
         'gold_reward': 3,
         'loot': [
             {
-                'name': 'Elven Twin Blade',
+                'name': 'Zombie Arm',
                 'type': 'weapon',
                 'drop_chance': 10,
                 'damage': 7,
                 'crit_chance': 7,
                 'crit_multiplier': .5,
                 'price': 7,
-                'action_name': 'skewers'
+                'action_name': 'slaps'
             },
             {
                 'name': 'Studded Leather Jerkin',

@@ -43,7 +43,8 @@ class Knight:
             'damage': 0,
             'crit_chance': 0,
             'crit_multiplier': 0,
-            'price': 1
+            'price': 1,
+            'action_name': 'punches'
         }
         self.inventory = []
         self.levels = [0, 20, 50, 100, 200, 500, 1000, 1500, 2000, 2500, 3000, 4000, 5250, 6500, 7750, 10000, 100000]
@@ -79,8 +80,7 @@ class Knight:
             Attack: {self.attack + self.weapon['damage']}
             Crit: {self.crit_chance + self.weapon['crit_chance']}% for {(self.crit_multiplier + self.weapon['crit_multiplier']) * 100}%
             Gold: {self.gold}
-            Inventory: {[x['name'] for x in self.inventory]}
-        """)
+            Inventory: {[x['name'] for x in self.inventory]}""")
 
 
 def roll_damage(dmg, crit_chance, crit_multiplier):
@@ -108,15 +108,14 @@ def equip_gear(curr_Knight, bag_of_gear):
                 break
             # Compare
             print(f"""
-Choose:
-(A) [{curr_Knight.weapon["name"]}]: 
+(A) Replace:[{curr_Knight.weapon["name"]}]: 
     {curr_Knight.weapon["damage"]} dmg  +{curr_Knight.weapon["crit_chance"]}% chance to +crit %{curr_Knight.weapon["crit_multiplier"]} 
-(D) [{gear["name"]}]: 
+    
+(D) With: [{gear["name"]}]: 
     {gear["damage"]} dmg  +{gear["crit_chance"]}% chance to +crit %{gear["crit_multiplier"]} """)
 
             option = msvcrt.getch()
             if option == 'A' or option == 'a' or option == b'a' or option == b'A':
-                print("TODO: Putting in bag")
                 Knight.inventory.append(gear)
 
             elif option == 'D' or option == 'd' or option == b'd' or option == b'D':
@@ -125,7 +124,6 @@ Choose:
 
 
         if gear['type'] == 'armor':
-
             if gear['name'] == Knight.armor['name']:
                 Knight.inventory.append(Knight.armor)
                 break
@@ -137,20 +135,24 @@ Choose:
 """)
             option = msvcrt.getch()
             if option == 'A' or option == 'a' or option == b'a' or option == b'A':
-                print("TODO: Putting in bag")
                 Knight.inventory.append(gear)
+                print(f'\n{Knight.name} equips [{gear["name"]}].\n')
 
             elif option == 'D' or option == 'd' or option == b'd' or option == b'D':
                 Knight.inventory.append(Knight.armor)
                 Knight.armor = gear
+                print(f'\n{Knight.name} equips [{gear["name"]}].\n')
+
 
 def sell_inventory():
+    print('\n')
     total_sell_value = 0
     for item in Knight.inventory:
         try:
             total_sell_value += item['price']
+            print(f'{Knight.name} sold {item["name"]} for {item["price"]}')
         except (NameError, KeyError):
-            print('An item was found priceless.')
+            print(f'{Knight.name} donated their old {item["name"]}')
     Knight.inventory = []
     Knight.gold += total_sell_value
 
@@ -163,7 +165,7 @@ def open_shop():
         if gear['type'] == 'weapon':
             print(f'({index})   [{gear["name"]}]: {gear["damage"]} dmg  +{gear["crit_chance"]}% chance to +crit %{gear["crit_multiplier"]}  | Cost: {gear["cost"]}')
 
-    print("(Q)Leave (W)Sell (1-9)Buy")
+    print("\n(Q)Leave (W)Sell (1-9)Buy")
     option = msvcrt.getch()
 
     if option == 'Q' or option == 'q' or option == b'q' or option == b'Q':
@@ -188,13 +190,15 @@ def open_shop():
 
         if Knight.gold > cost_of_item:
             Knight.gold -= cost_of_item
-        try:
-            equip_gear(Knight, shop[Knight.curr_tier][int(option)])
-        except IndexError:
-            print("That is no item! That is my cat!")
-        
-        
 
+            try:
+                equip_gear(Knight, [shop[Knight.curr_tier][int(option)]])
+            except IndexError:
+                print("That is no item! That is my cat!")
+        else:
+            print("\nYou can\'t afford that, peasant! Get out of here!\n")
+        
+        
 def combat(enemy):
     enemy = enemy[Knight.curr_tier]
     enemy_name = enemy['name']
@@ -208,23 +212,24 @@ def combat(enemy):
     calculated_damage = roll_damage(Knight.attack + Knight.weapon['damage'],
                                     Knight.crit_chance + Knight.weapon['crit_chance'],
                                     Knight.crit_multiplier + Knight.weapon['crit_multiplier'])
-    print(f"{Knight.name} slices {enemy_name} for {int(calculated_damage)} damage.")
+    print(f"{Knight.name} {Knight.weapon['action_name']} {enemy_name} for {int(calculated_damage)} damage.")
 
     enemy_health -= calculated_damage
 
     while enemy_health > 0 and Knight.curr_health > 0:
-        print(f"{enemy_name.capitalize()} slices {Knight.name} for {enemy_attack - Knight.armor['armor']} damage.")
+        print(f"{enemy_name.capitalize()} attacks {Knight.name} for {enemy_attack - Knight.armor['armor']} damage.")
         Knight.take_damage(enemy_attack - Knight.armor['armor'])
 
         calculated_damage = roll_damage(Knight.attack + Knight.weapon['damage'],
                                         Knight.crit_chance + Knight.weapon['crit_chance'],
                                         Knight.crit_multiplier + Knight.weapon['crit_multiplier'])
-        print(f"{Knight.name} slices {enemy_name} for {int(calculated_damage)} damage.")
+
+        print(f"{Knight.name} {Knight.weapon['action_name']} {enemy_name} for {int(calculated_damage)} damage.")
 
         enemy_health -= calculated_damage
 
     if Knight.curr_health > 0:
-        print(f"{Knight.name} defeats {enemy_name}. {xp_reward} XP awarded. HP: {Knight.curr_health}/{Knight.max_health}\n")
+        print(f"\n{Knight.name} defeats {enemy_name}. {xp_reward} XP awarded. HP: {Knight.curr_health}/{Knight.max_health}")
         Knight.gold += gold_reward
 
         equip_gear(Knight, loot_corpse(enemy['loot']))
@@ -233,7 +238,7 @@ def combat(enemy):
     # If enemy killed but Knight dies, Knight lives on
     elif enemy_health < 0:
         Knight.curr_health = 1
-        print(f"{Knight.name} barely defeats {enemy_name}. {xp_reward}*2 XP awarded. HP: {Knight.curr_health}/{Knight.max_health}\n")
+        print(f"{Knight.name} barely defeats {enemy_name}. {xp_reward}*2 XP awarded. HP: {Knight.curr_health}/{Knight.max_health}")
         Knight.gold += gold_reward
 
         # Auto equip drops
@@ -241,14 +246,14 @@ def combat(enemy):
         Knight.gain_experience(xp_reward*2)
 
     else:
-        print(f"{Knight.name} has been slain by {enemy_name}({enemy_health}/{enemy_max_health}).\n")
+        print(f"\n{Knight.name} has been slain by {enemy_name}({enemy_health}/{enemy_max_health}).\n")
         exit()
 
 
 def game_loop():
     # option = input("(A)Attack (S)Sleep (D)Dragon (Q)Equip (W)Sell (E)Shop:")
 
-    print("(A)Attack (S)Sleep (D)Dragon (Q)Stats (W)Sell (E)Shop")
+    print("\n(A)Attack (S)Sleep (D)Dragon (Q)Stats (W)Sell (E)Shop")
     # option = getch.getch()
     option = msvcrt.getch()
 
@@ -256,7 +261,7 @@ def game_loop():
         combat(minions)
 
     elif option == 'S' or option == 's' or option == b's' or option == b'S':
-        print(f"{Knight.name} makes camp.\n")
+        print(f"{Knight.name} makes camp.")
         Knight.curr_health = Knight.max_health
 
     elif option == 'D' or option == 'd' or option == b'd' or option == b'D':
@@ -279,6 +284,7 @@ def game_loop():
 
     elif option == 'X' or option == 'x' or option == b'x' or option == b'X':
         exit()
+
     else:
         print("Incorrect option:", option)
         # exit()
@@ -286,8 +292,14 @@ def game_loop():
     game_loop()
 
 
-print("\nWelcome to The Grey Knight.")
-print("Genre: Hardcore RPG Roguelike.\n")
+
+print("""
+Welcome to The Grey Knight.
+Genre: Permadeath, RPG, Roguelike, Zombies
+
+
+Your home and the nearby villages are under attack! Defeat minions to sharpen your blade, become a beefcake, and slay the dragon!
+""")
 
 new_name = input("Enter your name:")
 if new_name == "": new_name = "Gerald"
