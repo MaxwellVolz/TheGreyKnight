@@ -39,7 +39,7 @@ minions = [
                 'drop_chance': 10,
                 'damage': 7,
                 'crit_chance': 7,
-                'crit_multiplier': 1,
+                'crit_multiplier': .5,
                 'price': 7,
                 'action_name': 'skewers'
             },
@@ -64,7 +64,7 @@ minions = [
                 'type': 'weapon',
                 'drop_chance': 10,
                 'damage': 20,
-                'crit_chance': 10,
+                'crit_chance': .1,
                 'crit_multiplier': 1.2,
                 'price': 10,
                 'action_name': 'perforates'

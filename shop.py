@@ -6,7 +6,7 @@ shop = [
             'type': 'weapon',
             'damage': 1,
             'crit_chance': 20,
-            'crit_multiplier': 50,
+            'crit_multiplier': .50,
             'price': 10,
             'cost': 20,
             'action_name': 'cuts'
@@ -25,7 +25,7 @@ shop = [
             'type': 'weapon',
             'damage': 10,
             'crit_chance': 5,
-            'crit_multiplier': 1.1,
+            'crit_multiplier': .20,
             'price': 30,
             'cost': 100,
             'action_name': 'stabs'
@@ -45,7 +45,7 @@ shop = [
             'type': 'weapon',
             'damage': 40,
             'crit_chance': 45,
-            'crit_multiplier': -100,
+            'crit_multiplier': -.2,
             'price': 0,
             'cost': 800,
             'action_name': 'shanks'
